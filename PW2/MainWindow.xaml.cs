@@ -102,8 +102,8 @@ namespace PW2
         private void Fill_Button_Click(object sender, RoutedEventArgs e)
         {
             Solution_TextBox.Clear();
-            bool prv_range = Int32.TryParse(Range_TextBox.Text, out int range);
-            if (prv_range == true && WorkMas.mas != null) //2-ое условие - проверка на заполнение без скелета
+            bool prv_range = int.TryParse(Range_TextBox.Text, out int range);
+            if (prv_range == true && WorkMas.mas != null && range > 0) //2-ое условие - проверка на заполнение без скелета
             {
                 WorkMas.FillMas(in range);//Обращение с передачей информации об диапазоне
                 DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение таблицы с заполненными значениями
