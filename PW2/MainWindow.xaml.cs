@@ -42,13 +42,20 @@ namespace PW2
                 DefaultExt = "*.txt",
             };
             
-            if (openfile.ShowDialog() == true) 
-            {                                
-                WorkMas.Open_File(openfile.FileName); //Обращение к функции с параметром (название текстового файла, в котором хранятся данные)
-                DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение данных, считанных с файла
-                Solution_TextBox.Clear();
-                Solute_Button.IsEnabled = true;
-                Solute_Menu.IsEnabled = true;
+            if (openfile.ShowDialog() == true)
+            {
+                try
+                {
+                    WorkMas.Open_File(openfile.FileName); //Обращение к функции с параметром (название текстового файла, в котором хранятся данные)
+                    DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение данных, считанных с файла
+                    Solution_TextBox.Clear();
+                    Solute_Button.IsEnabled = true;
+                    Solute_Menu.IsEnabled = true;
+                }
+                catch
+                {
+                    MessageBox.Show("Произошла ошибка считывания! Файл поврежден!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }                
             }
         }
 
@@ -64,8 +71,15 @@ namespace PW2
 
             if (savefile.ShowDialog() == true)
             {                
-                WorkMas.twomas = false;                
-                WorkMas.Save_File(savefile.FileName); //Обращение к функции с параметром (аналогично предыдущему) 
+                WorkMas.twomas = false;
+                if(WorkMas.mas != null)
+                {
+                    WorkMas.Save_File(savefile.FileName); //Обращение к функции с параметром (аналогично предыдущему) 
+                }
+                else
+                {
+                    MessageBox.Show("Нет данных для сохранения! Необходимо для начала создать массив", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -80,33 +94,47 @@ namespace PW2
         private void CreateMas_Button_Click(object sender, RoutedEventArgs e)
         {
             Solution_TextBox.Clear();
-            bool prv_length = Int32.TryParse(CountColumns_TextBox.Text, out int length);
+            bool prv_length = int.TryParse(CountColumns_TextBox.Text, out int length);
             if (prv_length == true)
             {
-                WorkMas.CreateMas(in length); //Обращение с передачей информации о размере требуемого массива
-                DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение созданного скелета таблицы          
-                Solute_Button.IsEnabled = true;
-                Solute_Menu.IsEnabled = true;
+                try
+                {
+                    WorkMas.CreateMas(in length); //Обращение с передачей информации о размере требуемого массива
+                    DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение созданного скелета таблицы          
+                    Solute_Button.IsEnabled = true;
+                    Solute_Menu.IsEnabled = true;
+                }
+                catch
+                {
+                    MessageBox.Show("Некорректно задано значение для массива! Необходимо число > 0", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }                
             }
         }
 
         private void Exit_Button_Click(object sender, RoutedEventArgs e) //Закрытие программы
         {
-            this.Close();
+            Close();
         }
 
         private void AbProg_Button_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Лопаткин Сергей Михайлович. Практическая работа №2. Задание №8. Ввести n целых чисел. Вычислить косинус (cos) суммы чисел < 3. Результат вывести на экран.","О программе", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
+        }        
         private void Fill_Button_Click(object sender, RoutedEventArgs e)
         {
             Solution_TextBox.Clear();
-            bool prv_range = Int32.TryParse(Range_TextBox.Text, out int range);
+            bool prv_range = int.TryParse(Range_TextBox.Text, out int range);
             if (prv_range == true && WorkMas.mas != null) //2-ое условие - проверка на заполнение без скелета
             {
-                WorkMas.FillMas(in range);//Обращение с передачей информации об диапазоне
-                DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение таблицы с заполненными значениями
+                try
+                {
+                    WorkMas.FillMas(in range);//Обращение с передачей информации об диапазоне
+                    DataGT.ItemsSource = VisualArray.ToDataTable(WorkMas.mas).DefaultView; //Отображение таблицы с заполненными значениями
+                }
+                catch
+                {
+                    MessageBox.Show("Необходимо число >= 1", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else MessageBox.Show("У вас нет скелета таблицы или введен некорректно диапазон значений", "Внимание!", MessageBoxButton.OK, MessageBoxImage.Error);
         }
